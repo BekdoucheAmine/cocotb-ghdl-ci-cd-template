@@ -11,24 +11,25 @@ on:
     branches:
       - main
 
-
 jobs:
   verify:
-    runs-on: ubuntu-latest
-
-    # Using a specialized HDL container with GHDL and Python pre-installed
-    container: ghdl/ghdl:ubuntu22-mamba
-
+    runs-on: ubuntu-latest  # Standard runner, no custom container needed
+    
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Install dependencies
+      - name: Setup GHDL (Nightly)
+        uses: ghdl/setup-ghdl@v1
+        with:
+          version: nightly
+          backend: mcode  # mcode is fastest for CI; use 'llvm' if you need advanced features
+
+      - name: Install Python dependencies
         run: |
-          apt-get update && apt-get install -y make python3-pip
           pip3 install cocotb
 
-      - name: Run tests
+      - name: Run Simulation
         run: |
           cd tests
           python3 test_runner.py
