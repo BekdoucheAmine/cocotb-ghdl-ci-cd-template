@@ -1,0 +1,34 @@
+name: main
+
+# Define permissions for current workflow
+permissions:
+  contents: read
+  checks: write
+
+# Code runs only on pull request to main
+on:
+  pull_request:
+    branches:
+      - main
+
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+
+    # Using a specialized HDL container with GHDL and Python pre-installed
+    container: ghdl/ghdl:ubuntu22-mamba
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          apt-get update && apt-get install -y make python3-pip
+          pip3 install cocotb
+
+      - name: Run tests
+        run: |
+          cd tests
+          python3 test_runner.py
