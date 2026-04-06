@@ -33,3 +33,9 @@ jobs:
         run: |
           cd tests
           python3 test_runner.py
+        
+      - name: Publish Test Report
+        uses: mikepenz/action-junit-report@v4
+        if: always() # Run this even if the tests fail!
+        with:
+          report_paths: '**/results.xml'
